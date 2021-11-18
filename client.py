@@ -1,16 +1,28 @@
 import socket
-from time import sleep
+import threading
 
+print(1)
 sock = socket.socket()
-sock.setblocking(1)
-sock.connect(('10.38.165.12', 9090))
+sock.connect(('', 9090))
 
-#msg = input()
-msg = "Hi!"
-sock.send(msg.encode())
 
-data = sock.recv(1024)
+def proc_input():
+    msg = ''
+    while msg != 'exit':
+        msg = input('введите сообщение: ')
+        sock.send(msg.encode())
 
-sock.close()
 
-print(data.decode())
+def proc_output():
+    while True:
+        data = sock.recv(1024)
+        print(data.decode())
+        if data.decode() == 'exit':
+            break
+
+
+p1 = threading.Thread(target=proc_input, name="input", args=[])
+p2 = threading.Thread(target=proc_output, name="input", args=[])
+
+p2.start()
+p1.start()
